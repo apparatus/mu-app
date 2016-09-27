@@ -47,5 +47,5 @@ function getInfo (msg, done) {
     done(null, result)
   }
 
-  Parrallel(opts.mu, next, opts.storeTypes, complete)
+  Parallel(opts.mu, next, opts.storeTypes, complete)
 }
