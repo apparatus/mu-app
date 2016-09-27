@@ -39,6 +39,7 @@
     "test": "lab -v -P test -L -c -t 97"
   },
   "dependencies": {
+    "fastparallel": "^2.3.0",
     "lru-cache": "4.0.0",
     "seneca": "2.0.0",
     "seneca-balance-client": "0.5.x",
