@@ -30,31 +30,21 @@ const RequestProxy = {
 
 const Coveralls = Proxyquire('..', RequestProxy)
 
-function createInstance (options) {
-  const opts = _.assign({log: 'silent'}, options)
-  return Seneca(opts)
-  .use('seneca-entity')
-  .use(Coveralls, {
-    registry: NpmRegistry,
-    url: CoverallsUrl
-  })
-}
-
 process.setMaxListeners(12)
 
 const DefaultRequestMap = [
-{
-  urlMatch: NpmRegistry + 'seneca',
-  err: null,
-  response: {},
-  body: JSON.stringify(NpmSenecaFakeData)
-},
-{
-  urlMatch: 'coveralls.io',
-  err: null,
-  response: {},
-  body: JSON.stringify(CoverallsSenecaFakeData)
-}
+  {
+    urlMatch: NpmRegistry + 'seneca',
+    err: null,
+    response: {},
+    body: JSON.stringify(NpmSenecaFakeData)
+  },
+  {
+    urlMatch: 'coveralls.io',
+    err: null,
+    response: {},
+    body: JSON.stringify(CoverallsSenecaFakeData)
+  }
 ]
 
 test('"role:store, cmd:get, type:coveralls" non cached valid response', (t) => {
@@ -65,7 +55,7 @@ test('"role:store, cmd:get, type:coveralls" non cached valid response', (t) => {
   const payload = { 'name': 'seneca' }
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
       t.error(err)
       t.equal(reply.name, payload.name)
       t.ok(_.isNumber(reply.coveredPercent))
@@ -84,20 +74,20 @@ test('"role:store, cmd:get, type:coveralls" cached valid response', (t) => {
   const payload = { 'name': 'seneca' }
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
+      t.error(err)
+
+      const cachedOne = reply.cached
+      t.ok(cachedOne)
+
+      mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
         t.error(err)
 
-        const cachedOne = reply.cached
-        t.ok(cachedOne)
+        const cachedTwo = reply.cached
+        t.ok(cachedTwo)
 
-        mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
-          t.error(err)
-
-          const cachedTwo = reply.cached
-          t.ok(cachedTwo)
-
-          t.equal(cachedOne, cachedTwo)
-        })
+        t.equal(cachedOne, cachedTwo)
+      })
     })
   })
 })
@@ -110,7 +100,7 @@ test('"role:store, cmd:get, type:coveralls" non cached valid response - update f
   const payload = { 'name': 'seneca' }
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
       t.error(err)
 
       const cachedOne = reply.cached
@@ -118,7 +108,7 @@ test('"role:store, cmd:get, type:coveralls" non cached valid response - update f
 
       payload.update = true
 
-      mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name, update: payload.update}, (err, reply) => {
+      mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name, update: payload.update}, (err, reply) => {
         t.error(err)
 
         const cachedTwo = reply.cached
@@ -146,7 +136,7 @@ test('invalid "role:store, cmd:get, type:coveralls" no error and no data', (t) =
   RequestMap = _.concat(DefaultRequestMap, invalidPluginMap)
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
       t.ok(err)
     })
   })
@@ -170,7 +160,7 @@ test('invalid "role:store, cmd:get, type:coveralls" npm request returns error', 
   RequestMap = _.concat([], failedRequestMap)
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
       t.equal(err, errMsg)
     })
   })
@@ -182,7 +172,6 @@ test('invalid "role:store, cmd:get, type:coveralls" invalid body', (t) => {
   const mu = Mu()
 
   const payload = {name: 'seneca'}
-  const errMsg = 'Request failed'
   const failedRequestMap = {
     urlMatch: 'npm',
     err: null,
@@ -193,7 +182,7 @@ test('invalid "role:store, cmd:get, type:coveralls" invalid body', (t) => {
   RequestMap = _.concat([], failedRequestMap)
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
       t.ok(err)
     })
   })
@@ -216,7 +205,7 @@ test('invalid "role:store, cmd:get, type:coveralls" coveralls request return err
   RequestMap = _.concat([], failedRequestMap, DefaultRequestMap[0])
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
       t.equal(err, errMsg)
     })
   })
@@ -239,7 +228,7 @@ test('invalid "role:store, cmd:get, type:coveralls" coveralls request invalid bo
   RequestMap = _.concat([], failedRequestMap, DefaultRequestMap[0])
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
       t.ok(err)
     })
   })
@@ -261,7 +250,7 @@ test('invalid "role:store, cmd:get, type:coveralls" coveralls request invalid bo
   RequestMap = _.concat([], failedRequestMap, DefaultRequestMap[0])
 
   Coveralls(mu, {registry: NpmRegistry, url: CoverallsUrl}, () => {
-    mu.dispatch({role: 'store', cmd: 'get', type:'coveralls', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'store', cmd: 'get', type: 'coveralls', name: payload.name}, (err, reply) => {
       t.ok(err)
     })
   })
