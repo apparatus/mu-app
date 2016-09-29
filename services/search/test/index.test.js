@@ -25,12 +25,18 @@ test('"role:search, cmd:search" valid response', (t) => {
   const detailText = 'detail'
   const payload = { 'query': 'seneca' }
 
-  Search(mu, opts, () => {
-    function search (payload, done) {
+  searchStub.Client = function () {
+    this.search = function (payload, done) {
       done(null, { hits: { hits: [{_source: {detail: detailText}}] } })
     }
+    this.indices = {
+      exists: function (index, done) {
+        done(null, true)
+      }
+    }
+  }
 
-    opts.elastic.client.search = search
+  Search(mu, opts, () => {
     mu.dispatch({role: 'search', cmd: 'search', name: payload.name}, (err, reply) => {
       t.error(err)
       t.ok(reply)
