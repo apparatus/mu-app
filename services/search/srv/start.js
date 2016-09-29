@@ -15,12 +15,12 @@ var opts = {
     elastic: {
       host: envs.SEARCH_ELASTIC_HOST || 'localhost',
       port: envs.SEARCH_ELASTIC_PORT || '9200'
-    },
+    }
   }
 }
 
 const mu = Mu(opts.mu)
 
 Search(mu, opts.search, () => {
-  mu.inbound({role: 'store', type:'search'}, Tcp.server({host: opts.network.host, port: opts.network.port}))
+  mu.inbound({role: 'store', type: 'search'}, Tcp.server({host: opts.host, port: opts.port}))
 })

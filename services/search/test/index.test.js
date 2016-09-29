@@ -1,8 +1,41 @@
 'use strict'
 
+const Mu = require('mu')
+
 const test = require('tape')
 
-test('"role:store, cmd:search, type:search" ', (t) => {
-  t.plan(1)
-  t.ok(true)
+const Proxyquire = require('proxyquire')
+var searchStub = {}
+var Search = Proxyquire('../lib/search.js', { 'elasticsearch': searchStub })
+
+const opts = {
+  host: 'localhost',
+  port: '6040',
+  elastic: {
+    host: 'localhost',
+    port: 9200,
+    client: null
+  }
+}
+
+test('"role:search, cmd:search" valid response', (t) => {
+  t.plan(4)
+
+  const mu = Mu()
+  const detailText = 'detail'
+  const payload = { 'query': 'seneca' }
+
+  Search(mu, opts, () => {
+    function search (payload, done) {
+      done(null, { hits: { hits: [{_source: {detail: detailText}}] } })
+    }
+
+    opts.elastic.client.search = search
+    mu.dispatch({role: 'search', cmd: 'search', name: payload.name}, (err, reply) => {
+      t.error(err)
+      t.ok(reply)
+      t.ok(reply.items)
+      t.equal(detailText, reply.items[0])
+    })
+  })
 })

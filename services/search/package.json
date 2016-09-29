@@ -5,6 +5,7 @@
   "main": "lib/search.js",
   "scripts": {
     "start": "node srv/start.js",
+    "elastic": "docker run  -p 9200:9200 -p 9300:9300 elasticsearch",
     "test": "tape test/*.js | tap-spec"
   },
   "dependencies": {
@@ -12,6 +13,7 @@
     "mu": "apparatus/mu"
   },
   "devDependencies": {
+    "proxyquire": "^1.7.10",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.0"
   }

@@ -32,12 +32,12 @@ module.exports = function (mu, options, done) {
     if (err) {
       process.exit()
     }
+
+    mu.define({role: 'search', cmd: 'search'}, search)
+    mu.define({role: 'search', cmd: 'upsert'}, upsert)
+
+    done()
   })
-
-  mu.define({role: 'search', cmd: 'search'}, search)
-  mu.define({role: 'search', cmd: 'upsert'}, upsert)
-
-  done()
 }
 
 function ensureElasticSearch (done) {
@@ -83,7 +83,7 @@ function search (msg, done) {
       }
     }
 
-    done({items: items})
+    done(null, {items: items})
   })
 }
 
