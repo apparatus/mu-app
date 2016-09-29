@@ -19,7 +19,7 @@ var opts = {
   }
 }
 
-module.exports = function (options) {
+module.exports = function (mu, options, done) {
   opts = Object.assign({}, opts, options)
   opts.elastic.client = new ElasticSearch.Client({
     host: {
@@ -30,13 +30,12 @@ module.exports = function (options) {
 
   ensureElasticSearch((err) => {
     if (err) {
-      seneca.log.error(err)
       process.exit()
     }
   })
 
-  mu.define({role:'search', cmd:'search'}, search)
-  mu.define({role:'search', cmd:'upsert'}, upsert)
+  mu.define({role: 'search', cmd: 'search'}, search)
+  mu.define({role: 'search', cmd: 'upsert'}, upsert)
 
   done()
 }
