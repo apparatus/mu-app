@@ -26,6 +26,11 @@ have docker installed.
 Please note, you need to pass the host ip of your docker-machine
 if you are on an OS other than linux, obtain with `docker-machine ip default`.
 
+As a helper added in the scripts section a command to start an elastic search Docker container:
+```
+npm run elastic
+```
+
 ### Environment Variables
 Various settings can be changed using environment variables, see the list below for
 all available variable names.
