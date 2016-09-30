@@ -11,7 +11,7 @@ var opts = {
     tag: envs.NPM_TAG || 'muzoo-info'
   },
   info: {
-    port: envs.INFO_PORT || '6000'
+    port: envs.INFO_PORT || '6000',
     host: envs.NPM_HOST || 'localhost'
   },
   search: {
@@ -41,7 +41,7 @@ Info(mu, opts.info, () => {
 
   mu.outbound({role: 'store', type: 'npm'}, Tcp.server(opts.npm))
   mu.outbound({role: 'store', type: 'github'}, Tcp.server(opts.github))
-  mu.outbound({role: 'store', type: 'travis'}, Tcp.server(opts.travis.port))
+  mu.outbound({role: 'store', type: 'travis'}, Tcp.server(opts.travis))
   mu.outbound({role: 'store', type: 'coveralls'}, Tcp.server(opts.coveralls))
 
   mu.outbound({role: 'search', cmd: 'upsert'}, Tcp.server(opts.search))

@@ -52,10 +52,15 @@ Tape('It returns cached data by default', (test) => {
 
   Npm(mu, {}, () => {
     mu.dispatch({role: 'store', cmd: 'get', type: 'npm', name: 'example-module'}, (err, reply) => {
+      test.error(err)
       var cachedOne = reply.cached
+      test.ok(cachedOne)
 
       mu.dispatch({role: 'store', cmd: 'get', type: 'npm', name: 'example-module'}, (err, reply) => {
+        test.error(err)
+
         var cachedTwo = reply.cached
+        test.ok(cachedTwo)
 
         test.same(cachedOne, cachedTwo)
       })
@@ -70,9 +75,13 @@ Tape('It can return non-cached data', (test) => {
 
   Npm(mu, {}, () => {
     mu.dispatch({role: 'store', cmd: 'get', type: 'npm', name: 'example-module'}, (err, reply) => {
+      test.error(err)
+
       var cachedOne = reply.cached
 
       mu.dispatch({role: 'store', cmd: 'get', type: 'npm', name: 'example-module', update: true}, (err, reply) => {
+        test.error(err)
+
         var cachedTwo = reply.cached
 
         console.log(cachedOne, cachedTwo)

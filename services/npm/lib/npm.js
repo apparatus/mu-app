@@ -42,7 +42,7 @@ function cmdGet (msg, done) {
       data = JSON.parse(body)
     }
     catch (e) {
-      return done(err)
+      return done(e)
     }
 
     var distTags = data['dist-tags'] || {}

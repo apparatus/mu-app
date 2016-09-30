@@ -5,11 +5,15 @@
   "private": "true",
   "main": "lib/info.js",
   "scripts": {
-    "test": "lab -v -P test -L -c -t 97"
+    "start": "node srv/start.js",
+    "test": "tape test/*.js | tap-spec"
   },
   "dependencies": {
     "fastparallel": "^2.3.0",
+    "mu": "apparatus/mu"
   },
   "devDependencies": {
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.0"
   }
 }

@@ -37,7 +37,7 @@ test('"role:search, cmd:search" valid response', (t) => {
   }
 
   Search(mu, opts, () => {
-    mu.dispatch({role: 'search', cmd: 'search', name: payload.name}, (err, reply) => {
+    mu.dispatch({role: 'search', cmd: 'search', name: payload.query}, (err, reply) => {
       t.error(err)
       t.ok(reply)
       t.ok(reply.items)

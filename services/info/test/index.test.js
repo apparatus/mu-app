@@ -1,16 +1,8 @@
 'use strict'
 
-var Code = require('code')
-var Lab = require('lab')
-var Seneca = require('seneca')
-var _ = require('lodash')
-
-var lab = exports.lab = Lab.script()
-var describe = lab.describe
-var it = lab.it
-var suite = lab.suite
-var before = lab.before
-var expect = Code.expect
+const Mu = require('mu')
+const test = require('tape')
+const Info = require('../lib/info.js')
 
 var realModule =
 {data: {
@@ -24,41 +16,41 @@ var realModule =
   'id$': 'lodash'
 }}
 
-var si = Seneca()
-si.use('../info')
+const opts = {
+  port: '6000',
+  host: 'localhost'
+}
 
-suite('nodezoo-info suite tests ', function () {
-  before({}, function (done) {
-    si.ready(function (err) {
-      if (err) {
-        return process.exit(!console.error(err))
-      }
-      si.add({role: 'info', info: 'updated'}, function (args, done) {
-        done()
-      })
-      si.add({role: 'info', req: 'part'}, function (args, done) {
-        done()
-      })
-      si.act({role: 'info', res: 'part', part: 'travis', name: 'lodash'}, realModule)
+test('"role:info, cmd:get" valid response', (t) => {
+  t.plan(2)
 
-      done()
+  const mu = Mu()
+  const payload = { name: 'lodash' }
+
+  mu.define({role: 'store', cmd: 'get'}, () => {
+    return (null, realModule)
+  })
+
+  Info(mu, opts, () => {
+    mu.dispatch({role: 'info', cmd: 'get', name: payload.name}, (err, reply) => {
+      t.error(err)
+      t.ok(reply)
     })
   })
 })
 
-describe('nodezoo-info tests', () => {
-  it('can Find Module', function (done) {
-    si.act(_.extend({role: 'info', cmd: 'get', name: 'lodash'}), function (err, data) {
-      expect(err).to.not.exist()
-      expect(data).to.not.be.empty()
-      done(err)
-    })
+test('"role:info, cmd:get" cannot find module', (t) => {
+  t.plan(2)
+
+  const mu = Mu()
+  mu.define({role: 'store', cmd: 'get'}, () => {
+    return (null, realModule)
   })
-  it('cannot Find Module', function (done) {
-    si.act(_.extend({role: 'info', cmd: 'get', name: 'fakeModuleName'}), function (err, data) {
-      expect(err).to.not.exist()
-      expect(data).to.be.empty()
-      done(err)
+
+  Info(mu, opts, () => {
+    mu.dispatch({role: 'info', cmd: 'get', name: 'fakeModuleName'}, (err, reply) => {
+      t.error(err)
+      t.notOk(reply)
     })
   })
 })
